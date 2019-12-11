@@ -29,6 +29,7 @@ Partial Class frmMain
         Me.btnConvert = New System.Windows.Forms.Button()
         Me.lblFile = New System.Windows.Forms.Label()
         Me.lblLines = New System.Windows.Forms.Label()
+        Me.SaveAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -43,7 +44,7 @@ Partial Class frmMain
         '
         'FileToolStripMenuItem
         '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenToolStripMenuItem})
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenToolStripMenuItem, Me.SaveAsToolStripMenuItem})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
         Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.FileToolStripMenuItem.Text = "File"
@@ -89,6 +90,12 @@ Partial Class frmMain
         Me.lblLines.TabIndex = 4
         Me.lblLines.Text = "Lines:"
         '
+        'SaveAsToolStripMenuItem
+        '
+        Me.SaveAsToolStripMenuItem.Name = "SaveAsToolStripMenuItem"
+        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.SaveAsToolStripMenuItem.Text = "Save As"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -116,4 +123,5 @@ Partial Class frmMain
     Friend WithEvents btnConvert As Button
     Friend WithEvents lblFile As Label
     Friend WithEvents lblLines As Label
+    Friend WithEvents SaveAsToolStripMenuItem As ToolStripMenuItem
 End Class

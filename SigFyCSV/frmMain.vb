@@ -111,12 +111,13 @@
         If optionSampling = samplingType.decimate Then
 
             'precalculate this outside the loop to avoid doing the division inside the loop
-            Dim skips As ULong = numsamples / numOps
+            Dim skips As ULong = (numsamples - startsample) / numOps
 
             'loop round numops and get the values from the nearest points in array
             For i As Integer = 0 To numOps - 1
-                Dim sp As Integer = i * skips
+                Dim sp As Integer = (i * skips) + startsample
                 If sp > numsamples - 1 Then sp = numsamples - 1 'ensure dont overrun sample array
+                If sp < 0 Then sp = 0
 
                 'copy over the samples into the output
                 output(i) = samples(idxVolt, sp)

@@ -1,7 +1,7 @@
 ﻿Public Class frmMain
     Dim inFile As String
     Dim numsamples As Integer
-    Dim samples(2, 0) As Single
+    Dim samples(1, 0) As Single
     Dim output() As Single
     Dim startsample As Integer
     Dim endsample As Integer
@@ -47,6 +47,7 @@
                     OpenParseCSV(.FileName)
                     lblLines.Text = "Lines: " & numsamples
                     Me.Cursor = Cursors.Default
+                    btnConvert.Enabled = True
                 End If
             End With
         Catch ex As Exception
@@ -66,7 +67,7 @@
                 Dim l1() As String = ls(1).Split(":")
                 If l1.Length > 0 Then
                     numsamples = ls(1).Split(":")(1)
-                    ReDim samples(2, numsamples)
+                    ReDim samples(1, numsamples)
                     sampleI = 0
                 End If
             End If
@@ -93,9 +94,9 @@
 
     End Sub
 
-    Private Sub Convert(numOps As Integer)
+    Private Sub Convert(numOutputPoints As Integer)
 
-        ReDim output(numOps - 1)
+        ReDim output(numOutputPoints - 1)
         If startAtTrig = False Then
             startsample = 0
         Else
@@ -108,19 +109,44 @@
             Next i
         End If
 
+        'vertical rescaling, if needed
+
+        Dim vgain As Single = 1 'default, and used for no change option
+        Dim voffset As Single = 0  'default, and used for no change option
+
+        If optionVertical <> verticalType.nochange Then
+
+            Dim vmin As Single = Single.MaxValue
+            Dim vmax As Single = Single.MinValue
+            'find min and max of signal
+            For i As Integer = startsample To numsamples - 1
+                If samples(idxVolt, i) > vmax Then vmax = samples(idxVolt, i)
+                If samples(idxVolt, i) < vmin Then vmin = samples(idxVolt, i)
+            Next i
+            If optionVertical = verticalType.rescale01 Then
+                voffset = vmin
+                vgain = 1 / (vmax - vmin)
+            End If
+            If optionVertical = verticalType.rescalem1p1 Then
+                voffset = (vmin + vmax) / 2
+                vgain = 2 / (vmax - vmin)
+            End If
+
+        End If
+
         If optionSampling = samplingType.decimate Then
 
             'precalculate this outside the loop to avoid doing the division inside the loop
-            Dim skips As ULong = (numsamples - startsample) / numOps
+            Dim skips As ULong = (numsamples - startsample) / numOutputPoints
 
             'loop round numops and get the values from the nearest points in array
-            For i As Integer = 0 To numOps - 1
+            For i As Integer = 0 To numOutputPoints - 1
                 Dim sp As Integer = (i * skips) + startsample
                 If sp > numsamples - 1 Then sp = numsamples - 1 'ensure dont overrun sample array
                 If sp < 0 Then sp = 0
 
                 'copy over the samples into the output
-                output(i) = samples(idxVolt, sp)
+                output(i) = vgain * (samples(idxVolt, sp) - voffset)
             Next i
 
         End If

@@ -95,7 +95,7 @@ Partial Class frmMain
         Me.GroupBox3.Controls.Add(Me.optVertNoChange)
         Me.GroupBox3.Location = New System.Drawing.Point(174, 12)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(145, 133)
+        Me.GroupBox3.Size = New System.Drawing.Size(145, 105)
         Me.GroupBox3.TabIndex = 7
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Vertical Scale"
@@ -154,6 +154,7 @@ Partial Class frmMain
         Me.optAverageNearest.TabIndex = 1
         Me.optAverageNearest.Text = "Average nearest"
         Me.optAverageNearest.UseVisualStyleBackColor = True
+        Me.optAverageNearest.Visible = False
         '
         'optDecimate
         '
@@ -224,6 +225,7 @@ Partial Class frmMain
         '
         'btnConvert
         '
+        Me.btnConvert.Enabled = False
         Me.btnConvert.Location = New System.Drawing.Point(13, 400)
         Me.btnConvert.Name = "btnConvert"
         Me.btnConvert.Size = New System.Drawing.Size(285, 38)

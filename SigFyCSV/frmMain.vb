@@ -1,8 +1,26 @@
 ﻿Public Class frmMain
     Dim inFile As String
     Dim numsamples As Integer
-    Dim samples() As Single
+    Dim samples(2, 0) As Single
     Dim output() As Single
+    Dim startsample As Integer
+    Dim endsample As Integer
+    Dim startAtTrig As Boolean
+    Enum samplingType
+        decimate
+        averagenearest
+
+    End Enum
+    Dim optionSampling As samplingType
+    Enum verticalType
+        nochange
+        rescale01
+        rescalem1p1
+    End Enum
+    Dim optionVertical As verticalType
+    'indexes of values in the incoming CSV
+    Const idxSecond As Integer = 0
+    Const idxVolt As Integer = 1
     Private Sub OpenToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenToolStripMenuItem.Click
         Dim odlg As New OpenFileDialog
         Try
@@ -48,7 +66,7 @@
                 Dim l1() As String = ls(1).Split(":")
                 If l1.Length > 0 Then
                     numsamples = ls(1).Split(":")(1)
-                    ReDim samples(numsamples)
+                    ReDim samples(2, numsamples)
                     sampleI = 0
                 End If
             End If
@@ -58,7 +76,8 @@
                 '-0.00070000000, 0.29600
                 Dim s() As String = ln.Split(",")
                 If s.Length = 2 Then
-                    samples(sampleI) = Trim(s(1))
+                    samples(idxSecond, sampleI) = Trim(s(idxSecond))
+                    samples(idxVolt, sampleI) = Trim(s(idxVolt))
                     sampleI += 1
                     If sampleI > numsamples Then Exit For
                 End If
@@ -70,15 +89,42 @@
     End Sub
 
     Private Sub btnConvert_Click(sender As Object, e As EventArgs) Handles btnConvert.Click
-        Convert()
+        Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
 
     End Sub
 
-    Private Sub Convert()
-        ReDim output(numsamples - 1)
-        For i As Integer = 0 To numsamples - 1
-            output(i) = samples(i)
-        Next i
+    Private Sub Convert(numOps As Integer)
+
+        ReDim output(numOps - 1)
+        If startAtTrig = False Then
+            startsample = 0
+        Else
+            'scan through the time values looking for the first 0 or positive value which is where the trigger point on the scope was
+            For i As Integer = 0 To numsamples - 1
+                If samples(idxSecond, i) >= 0 Then
+                    startsample = i
+                    Exit For
+                End If
+            Next i
+        End If
+
+        If optionSampling = samplingType.decimate Then
+
+            'precalculate this outside the loop to avoid doing the division inside the loop
+            Dim skips As ULong = numsamples / numOps
+
+            'loop round numops and get the values from the nearest points in array
+            For i As Integer = 0 To numOps - 1
+                Dim sp As Integer = i * skips
+                If sp > numsamples - 1 Then sp = numsamples - 1 'ensure dont overrun sample array
+
+                'copy over the samples into the output
+                output(i) = samples(idxVolt, sp)
+            Next i
+
+        End If
+
+
     End Sub
 
     Private Sub SaveAsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SaveAsToolStripMenuItem.Click
@@ -125,5 +171,52 @@
         Catch ex As Exception
             MsgBox("Error during save " & ex.ToString)
         End Try
+    End Sub
+
+    Private Sub optComplete_CheckedChanged(sender As Object, e As EventArgs) Handles optComplete.CheckedChanged
+        If optComplete.Checked Then
+            startAtTrig = False
+
+        End If
+        If optStartAtTrigger.Checked Then
+            startAtTrig = True
+        End If
+    End Sub
+
+    Private Sub optDecimate_CheckedChanged(sender As Object, e As EventArgs) Handles optDecimate.CheckedChanged
+        If optDecimate.Checked Then
+            optionSampling = samplingType.decimate
+        End If
+        If optAverageNearest.Checked Then
+            optionSampling = samplingType.averagenearest
+
+        End If
+    End Sub
+    Private Sub ChangeVertOption()
+        If optVertNoChange.Checked Then
+            optionVertical = verticalType.nochange
+        End If
+        If optVertRescale01.Checked Then
+            optionVertical = verticalType.rescale01
+        End If
+        If optVertRescaleM1P1.Checked Then
+            optionVertical = verticalType.rescalem1p1
+        End If
+    End Sub
+
+    Private Sub optVertNoChange_CheckedChanged(sender As Object, e As EventArgs) Handles optVertNoChange.CheckedChanged
+        ChangeVertOption()
+    End Sub
+
+    Private Sub optRescale01_CheckedChanged(sender As Object, e As EventArgs) Handles optVertRescale01.CheckedChanged
+        ChangeVertOption()
+    End Sub
+
+    Private Sub optVertRescaleM1P1_CheckedChanged(sender As Object, e As EventArgs) Handles optVertRescaleM1P1.CheckedChanged
+        ChangeVertOption()
+    End Sub
+
+    Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
+        cmbOutputPoints.SelectedIndex = 0
     End Sub
 End Class

@@ -54,7 +54,7 @@ Partial Class frmMain
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
-        Me.MenuStrip1.Size = New System.Drawing.Size(800, 24)
+        Me.MenuStrip1.Size = New System.Drawing.Size(773, 24)
         Me.MenuStrip1.TabIndex = 0
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -243,7 +243,7 @@ Partial Class frmMain
         '
         'crtSamples
         '
-        Me.crtSamples.Location = New System.Drawing.Point(378, 102)
+        Me.crtSamples.Location = New System.Drawing.Point(364, 100)
         Me.crtSamples.Name = "crtSamples"
         Me.crtSamples.Size = New System.Drawing.Size(390, 232)
         Me.crtSamples.TabIndex = 5
@@ -253,7 +253,7 @@ Partial Class frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 401)
+        Me.ClientSize = New System.Drawing.Size(773, 344)
         Me.Controls.Add(Me.crtSamples)
         Me.Controls.Add(Me.lblLines)
         Me.Controls.Add(Me.lblFile)

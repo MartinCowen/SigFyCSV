@@ -108,10 +108,13 @@ Public Class frmMain
         crtSamples.Series.Clear()
 
         Dim scol As New SeriesCollection
-        Dim scatters As New ScatterSeries
+        Dim scatters As New LineSeries
         scatters.Title = "Samples"
         scatters.Values = New ChartValues(Of ObservablePoint)()
-        scatters.MaxPointShapeDiameter = 3
+        scatters.PointGeometrySize = 1
+        scatters.Fill = Windows.Media.Brushes.Transparent
+        scatters.Stroke = Windows.Media.Brushes.DarkBlue
+
 
         'scale to size of plot on screen, no point trying to plot more points than are visible
         Dim skips As Integer = output.GetLength(1) / crtSamples.Width

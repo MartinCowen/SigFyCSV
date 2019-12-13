@@ -1,8 +1,15 @@
-﻿Public Class frmMain
+﻿Imports LiveCharts
+Imports LiveCharts.Wpf
+Imports LiveCharts.WinForms
+Imports LiveCharts.Defaults
+
+Public Class frmMain
+
+
     Dim inFile As String
     Dim numsamples As Integer
     Dim samples(1, 0) As Single
-    Dim output() As Single
+    Dim output(1, 0) As Single
     Dim startsample As Integer
     Dim endsample As Integer
     Dim startAtTrig As Boolean
@@ -46,8 +53,9 @@
                     lblFile.Text = inFile
                     OpenParseCSV(.FileName)
                     lblLines.Text = "Lines: " & numsamples
+                    Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+                    FillSampleChart()
                     Me.Cursor = Cursors.Default
-                    btnConvert.Enabled = True
                 End If
             End With
         Catch ex As Exception
@@ -89,14 +97,41 @@
         Next ln
     End Sub
 
-    Private Sub btnConvert_Click(sender As Object, e As EventArgs) Handles btnConvert.Click
-        Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+    'Private Sub ClearSampleChart()
+    '    crtSamples.Series.Clear()
+    'End Sub
+
+    Private Sub FillSampleChart()
+        crtSamples.DisableAnimations = True
+        crtSamples.Hoverable = False
+
+        crtSamples.Series.Clear()
+
+        Dim scol As New SeriesCollection
+        Dim scatters As New ScatterSeries
+        scatters.Title = "Samples"
+        scatters.Values = New ChartValues(Of ObservablePoint)()
+        scatters.MaxPointShapeDiameter = 3
+
+        'scale to size of plot on screen, no point trying to plot more points than are visible
+        Dim skips As Integer = output.GetLength(1) / crtSamples.Width
+        For i As Integer = 0 To crtSamples.Width - 1
+            Dim sp As Integer = i * skips
+            If sp > output.GetLength(1) - 1 Then sp = output.GetLength(1) - 1
+            scatters.Values.Add(New ObservablePoint(output(idxSecond, sp), output(idxVolt, sp)))
+        Next i
+
+        scatters.DataLabels = False
+        scol.Add(scatters)
+        crtSamples.Series = scol
 
     End Sub
 
+
+
     Private Sub Convert(numOutputPoints As Integer)
 
-        ReDim output(numOutputPoints - 1)
+        ReDim output(1, numOutputPoints - 1)
         If startAtTrig = False Then
             startsample = 0
         Else
@@ -142,15 +177,14 @@
             'loop round numops and get the values from the nearest points in array
             For i As Integer = 0 To numOutputPoints - 1
                 Dim sp As Integer = (i * skips) + startsample
-                If sp > numsamples - 1 Then sp = numsamples - 1 'ensure dont overrun sample array
+                If sp > numsamples - 1 Then sp = numsamples - 1 'ensure don't overrun sample array
                 If sp < 0 Then sp = 0
 
                 'copy over the samples into the output
-                output(i) = vgain * (samples(idxVolt, sp) - voffset)
+                output(idxSecond, i) = samples(idxSecond, i)
+                output(idxVolt, i) = vgain * (samples(idxVolt, sp) - voffset)
             Next i
-
         End If
-
 
     End Sub
 
@@ -189,9 +223,9 @@
     End Sub
     Private Sub SaveOutput(filename As String)
         Dim fs As String = String.Empty
-        For Each sg As Single In output
-            fs &= sg & Environment.NewLine
-        Next sg
+        For i As Integer = 0 To output.GetLength(1) - 1
+            fs &= output(idxVolt, i) & Environment.NewLine
+        Next i
 
         Try
             IO.File.WriteAllText(filename, fs)
@@ -208,6 +242,11 @@
         If optStartAtTrigger.Checked Then
             startAtTrig = True
         End If
+        If inFile <> String.Empty Then
+            Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+            FillSampleChart()
+        End If
+
     End Sub
 
     Private Sub optDecimate_CheckedChanged(sender As Object, e As EventArgs) Handles optDecimate.CheckedChanged
@@ -217,6 +256,10 @@
         If optAverageNearest.Checked Then
             optionSampling = samplingType.averagenearest
 
+        End If
+        If inFile <> String.Empty Then
+            Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+            FillSampleChart()
         End If
     End Sub
     Private Sub ChangeVertOption()
@@ -228,6 +271,10 @@
         End If
         If optVertRescaleM1P1.Checked Then
             optionVertical = verticalType.rescalem1p1
+        End If
+        If inFile <> String.Empty Then
+            Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+            FillSampleChart()
         End If
     End Sub
 
@@ -245,5 +292,8 @@
 
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         cmbOutputPoints.SelectedIndex = 0
+
     End Sub
+
+
 End Class

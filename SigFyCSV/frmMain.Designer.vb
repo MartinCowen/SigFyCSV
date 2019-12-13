@@ -39,9 +39,9 @@ Partial Class frmMain
         Me.Label1 = New System.Windows.Forms.Label()
         Me.optStartAtTrigger = New System.Windows.Forms.RadioButton()
         Me.optComplete = New System.Windows.Forms.RadioButton()
-        Me.btnConvert = New System.Windows.Forms.Button()
         Me.lblFile = New System.Windows.Forms.Label()
         Me.lblLines = New System.Windows.Forms.Label()
+        Me.crtSamples = New LiveCharts.WinForms.CartesianChart()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -83,7 +83,7 @@ Partial Class frmMain
         Me.pnlOptions.Controls.Add(Me.GroupBox3)
         Me.pnlOptions.Controls.Add(Me.GroupBox2)
         Me.pnlOptions.Controls.Add(Me.GroupBox1)
-        Me.pnlOptions.Location = New System.Drawing.Point(12, 150)
+        Me.pnlOptions.Location = New System.Drawing.Point(15, 102)
         Me.pnlOptions.Name = "pnlOptions"
         Me.pnlOptions.Size = New System.Drawing.Size(338, 232)
         Me.pnlOptions.TabIndex = 1
@@ -223,42 +223,40 @@ Partial Class frmMain
         Me.optComplete.Text = "Complete Waveform"
         Me.optComplete.UseVisualStyleBackColor = True
         '
-        'btnConvert
-        '
-        Me.btnConvert.Enabled = False
-        Me.btnConvert.Location = New System.Drawing.Point(13, 400)
-        Me.btnConvert.Name = "btnConvert"
-        Me.btnConvert.Size = New System.Drawing.Size(285, 38)
-        Me.btnConvert.TabIndex = 2
-        Me.btnConvert.Text = "Convert"
-        Me.btnConvert.UseVisualStyleBackColor = True
-        '
         'lblFile
         '
         Me.lblFile.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.lblFile.Location = New System.Drawing.Point(13, 34)
         Me.lblFile.Name = "lblFile"
-        Me.lblFile.Size = New System.Drawing.Size(741, 30)
+        Me.lblFile.Size = New System.Drawing.Size(741, 18)
         Me.lblFile.TabIndex = 3
         Me.lblFile.Text = "File"
         '
         'lblLines
         '
         Me.lblLines.AutoSize = True
-        Me.lblLines.Location = New System.Drawing.Point(12, 77)
+        Me.lblLines.Location = New System.Drawing.Point(12, 64)
         Me.lblLines.Name = "lblLines"
         Me.lblLines.Size = New System.Drawing.Size(35, 13)
         Me.lblLines.TabIndex = 4
         Me.lblLines.Text = "Lines:"
         '
+        'crtSamples
+        '
+        Me.crtSamples.Location = New System.Drawing.Point(378, 102)
+        Me.crtSamples.Name = "crtSamples"
+        Me.crtSamples.Size = New System.Drawing.Size(390, 232)
+        Me.crtSamples.TabIndex = 5
+        Me.crtSamples.Text = "CartesianChart1"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.ClientSize = New System.Drawing.Size(800, 401)
+        Me.Controls.Add(Me.crtSamples)
         Me.Controls.Add(Me.lblLines)
         Me.Controls.Add(Me.lblFile)
-        Me.Controls.Add(Me.btnConvert)
         Me.Controls.Add(Me.pnlOptions)
         Me.Controls.Add(Me.MenuStrip1)
         Me.MainMenuStrip = Me.MenuStrip1
@@ -282,7 +280,6 @@ Partial Class frmMain
     Friend WithEvents FileToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents pnlOptions As Panel
-    Friend WithEvents btnConvert As Button
     Friend WithEvents lblFile As Label
     Friend WithEvents lblLines As Label
     Friend WithEvents SaveAsToolStripMenuItem As ToolStripMenuItem
@@ -298,4 +295,5 @@ Partial Class frmMain
     Friend WithEvents optDecimate As RadioButton
     Friend WithEvents cmbOutputPoints As ComboBox
     Friend WithEvents Label1 As Label
+    Friend WithEvents crtSamples As LiveCharts.WinForms.CartesianChart
 End Class

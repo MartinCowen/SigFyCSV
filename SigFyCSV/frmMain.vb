@@ -2,13 +2,15 @@
 Imports LiveCharts.Wpf
 Imports LiveCharts.WinForms
 Imports LiveCharts.Defaults
+Imports System.ComponentModel
+
 
 Public Class frmMain
 
 
     Dim inFile As String
-    Dim numsamples As Integer
-    Dim samples(1, 0) As Single
+    Shared numsamples As Integer
+    Private Shared samples(1, 0) As Single
     Dim output(1, 0) As Single
     Dim startsample As Integer
     Dim endsample As Integer
@@ -28,6 +30,11 @@ Public Class frmMain
     'indexes of values in the incoming CSV
     Const idxSecond As Integer = 0
     Const idxVolt As Integer = 1
+    Private WithEvents bwParseCSV As New BackgroundWorker
+    Public Class bwParseCSVArgType
+        Public filename As String
+    End Class
+
     Private Sub OpenToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenToolStripMenuItem.Click
         Dim odlg As New OpenFileDialog
         Try
@@ -51,10 +58,10 @@ Public Class frmMain
                     Me.Cursor = Cursors.WaitCursor
                     inFile = .FileName
                     lblFile.Text = inFile
-                    OpenParseCSV(.FileName)
-                    lblLines.Text = "Lines: " & numsamples
-                    Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
-                    FillSampleChart()
+
+                    Dim args As bwParseCSVArgType = New bwParseCSVArgType()
+                    args.filename = .FileName
+                    bwParseCSV.RunWorkerAsync(args)
                     Me.Cursor = Cursors.Default
                 End If
             End With
@@ -63,43 +70,34 @@ Public Class frmMain
             MsgBox(ex.Message, MsgBoxStyle.Exclamation, Application.ProductName)
         End Try
     End Sub
+    Private Sub bwParseCSV_DoWork(ByVal sender As Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles bwParseCSV.DoWork
+        Dim args As bwParseCSVArgType = e.Argument
 
-    Private Sub OpenParseCSV(filename As String)
-        Dim fs() As String = IO.File.ReadAllLines(filename)
-        Dim endofheader As Boolean = False
-        Dim sampleI As ULong
-        For Each ln As String In fs
-            Dim ls() As String = ln.Split(",")
-            If ls(1).StartsWith("Analog:") Then
-                'Record Length,Analog:1400000
-                Dim l1() As String = ls(1).Split(":")
-                If l1.Length > 0 Then
-                    numsamples = ls(1).Split(":")(1)
-                    ReDim samples(1, numsamples)
-                    sampleI = 0
-                End If
-            End If
-            'test endofheader before setting true so that only lines after endofheader are analysed
-            If endofheader Then
-                'parse sample line, eg
-                '-0.00070000000, 0.29600
-                Dim s() As String = ln.Split(",")
-                If s.Length = 2 Then
-                    samples(idxSecond, sampleI) = Trim(s(idxSecond))
-                    samples(idxVolt, sampleI) = Trim(s(idxVolt))
-                    sampleI += 1
-                    If sampleI > numsamples Then Exit For
-                End If
-            End If
-            If ls(0) = "Second" Then 'the line before the data starts is "Second,Volt"
-                endofheader = True
-            End If
-        Next ln
+        bwParseCSV.WorkerReportsProgress = True
+        ProgressBar1.Visible = True
+        Dim mParser As New cParser(args.filename)
+        mParser.bw = bwParseCSV
+        mParser.OpenParseCSV()
+        'OpenParseCSV(args.filename)
     End Sub
 
-    'Private Sub ClearSampleChart()
-    '    crtSamples.Series.Clear()
-    'End Sub
+    Private Sub bwParseCSV_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles bwParseCSV.ProgressChanged
+        ProgressBar1.Value = e.ProgressPercentage
+        If e.ProgressPercentage = 100 Then
+            ProgressBar1.Visible = False
+
+        End If
+    End Sub
+
+    Private Sub bwParseCSV_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles bwParseCSV.RunWorkerCompleted
+        'ProgressBar1.Visible = False
+        lblLines.Text = "Lines: " & numsamples
+        Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+        FillSampleChart()
+    End Sub
+
+
+
 
     Private Sub FillSampleChart()
         crtSamples.DisableAnimations = True
@@ -298,5 +296,65 @@ Public Class frmMain
 
     End Sub
 
+    Class cParser
+        Private _filename As String
+        'Private samples(1, 0) As Single
+        'Private numsamples As Integer
+        Public bw As BackgroundWorker
+        Public Sub New(f As String)
+            _filename = f
+        End Sub
+        Public Sub OpenParseCSV()
+            Dim sw As New Stopwatch
+            Dim prevpercent As Single = 0
 
+            sw.Start()
+            Dim fs() As String = IO.File.ReadAllLines(_filename)
+            sw.Stop()
+            Debug.Print("read all lines " & sw.ElapsedMilliseconds)
+            Dim endofheader As Boolean = False
+            Dim sampleI As ULong
+            For Each ln As String In fs
+                Dim ls() As String = ln.Split(",")
+                If ls(1).StartsWith("Analog:") Then
+                    'Record Length,Analog:1400000
+                    Dim l1() As String = ls(1).Split(":")
+                    If l1.Length > 0 Then
+                        numsamples = ls(1).Split(":")(1)
+                        ReDim samples(1, numsamples)
+                        sampleI = 0
+                        bw.ReportProgress(0)
+                    End If
+                End If
+                'test endofheader before setting true so that only lines after endofheader are analysed
+                If endofheader Then
+                    'parse sample line, eg
+                    '-0.00070000000, 0.29600
+                    Dim s() As String = ln.Split(",")
+                    If s.Length = 2 Then
+                        samples(idxSecond, sampleI) = Trim(s(idxSecond))
+                        samples(idxVolt, sampleI) = Trim(s(idxVolt))
+                        sampleI += 1
+                        Dim percent As Single = 100 * sampleI / numsamples
+                        If percent - prevpercent > 2 AndAlso percent <= 100 Then 'changed by 2%
+                            bw.ReportProgress(percent)
+                            prevpercent = percent
+                        End If
+                        If sampleI > numsamples Then
+
+                            Exit For
+                        End If
+                    End If
+                End If
+                If ls(0) = "Second" Then 'the line before the data starts is "Second,Volt"
+                    endofheader = True
+                    sw.Reset()
+                    sw.Start()
+                End If
+            Next ln
+            sw.Stop()
+            Debug.Print("parsing " & sw.ElapsedMilliseconds)
+
+        End Sub
+    End Class
 End Class

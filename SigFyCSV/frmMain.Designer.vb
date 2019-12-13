@@ -42,6 +42,8 @@ Partial Class frmMain
         Me.lblFile = New System.Windows.Forms.Label()
         Me.lblLines = New System.Windows.Forms.Label()
         Me.crtSamples = New LiveCharts.WinForms.CartesianChart()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -83,7 +85,7 @@ Partial Class frmMain
         Me.pnlOptions.Controls.Add(Me.GroupBox3)
         Me.pnlOptions.Controls.Add(Me.GroupBox2)
         Me.pnlOptions.Controls.Add(Me.GroupBox1)
-        Me.pnlOptions.Location = New System.Drawing.Point(15, 102)
+        Me.pnlOptions.Location = New System.Drawing.Point(15, 68)
         Me.pnlOptions.Name = "pnlOptions"
         Me.pnlOptions.Size = New System.Drawing.Size(338, 232)
         Me.pnlOptions.TabIndex = 1
@@ -160,6 +162,7 @@ Partial Class frmMain
         '
         Me.optDecimate.AutoSize = True
         Me.optDecimate.Checked = True
+        Me.optDecimate.Enabled = False
         Me.optDecimate.Location = New System.Drawing.Point(7, 20)
         Me.optDecimate.Name = "optDecimate"
         Me.optDecimate.Size = New System.Drawing.Size(109, 17)
@@ -226,7 +229,7 @@ Partial Class frmMain
         'lblFile
         '
         Me.lblFile.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.lblFile.Location = New System.Drawing.Point(13, 34)
+        Me.lblFile.Location = New System.Drawing.Point(13, 24)
         Me.lblFile.Name = "lblFile"
         Me.lblFile.Size = New System.Drawing.Size(741, 18)
         Me.lblFile.TabIndex = 3
@@ -235,7 +238,7 @@ Partial Class frmMain
         'lblLines
         '
         Me.lblLines.AutoSize = True
-        Me.lblLines.Location = New System.Drawing.Point(12, 64)
+        Me.lblLines.Location = New System.Drawing.Point(12, 52)
         Me.lblLines.Name = "lblLines"
         Me.lblLines.Size = New System.Drawing.Size(35, 13)
         Me.lblLines.TabIndex = 4
@@ -243,17 +246,36 @@ Partial Class frmMain
         '
         'crtSamples
         '
-        Me.crtSamples.Location = New System.Drawing.Point(364, 100)
+        Me.crtSamples.Location = New System.Drawing.Point(359, 68)
         Me.crtSamples.Name = "crtSamples"
         Me.crtSamples.Size = New System.Drawing.Size(390, 232)
         Me.crtSamples.TabIndex = 5
         Me.crtSamples.Text = "CartesianChart1"
         '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(361, 52)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(42, 13)
+        Me.Label2.TabIndex = 6
+        Me.Label2.Text = "Output:"
+        '
+        'ProgressBar1
+        '
+        Me.ProgressBar1.Location = New System.Drawing.Point(154, 45)
+        Me.ProgressBar1.Name = "ProgressBar1"
+        Me.ProgressBar1.Size = New System.Drawing.Size(201, 19)
+        Me.ProgressBar1.TabIndex = 7
+        Me.ProgressBar1.Visible = False
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(773, 344)
+        Me.ClientSize = New System.Drawing.Size(773, 312)
+        Me.Controls.Add(Me.ProgressBar1)
+        Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.crtSamples)
         Me.Controls.Add(Me.lblLines)
         Me.Controls.Add(Me.lblFile)
@@ -296,4 +318,6 @@ Partial Class frmMain
     Friend WithEvents cmbOutputPoints As ComboBox
     Friend WithEvents Label1 As Label
     Friend WithEvents crtSamples As LiveCharts.WinForms.CartesianChart
+    Friend WithEvents Label2 As Label
+    Friend WithEvents ProgressBar1 As ProgressBar
 End Class

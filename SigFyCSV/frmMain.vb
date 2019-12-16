@@ -61,7 +61,12 @@ Public Class frmMain
 
                     Dim args As bwParseCSVArgType = New bwParseCSVArgType()
                     args.filename = .FileName
-                    bwParseCSV.RunWorkerAsync(args)
+
+                    If bwParseCSV.IsBusy = False Then
+                        pbParsing.Value = 0 'UI interaction has to be on this thread, not the worker one
+                        pbParsing.Visible = True
+                        bwParseCSV.RunWorkerAsync(args)
+                    End If
                     Me.Cursor = Cursors.Default
                 End If
             End With
@@ -72,38 +77,32 @@ Public Class frmMain
     End Sub
     Private Sub bwParseCSV_DoWork(ByVal sender As Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles bwParseCSV.DoWork
         Dim args As bwParseCSVArgType = e.Argument
-
-        bwParseCSV.WorkerReportsProgress = True
-        ProgressBar1.Visible = True
         Dim mParser As New cParser(args.filename)
         mParser.bw = bwParseCSV
         mParser.OpenParseCSV()
-        'OpenParseCSV(args.filename)
+        mParser = Nothing
     End Sub
 
     Private Sub bwParseCSV_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles bwParseCSV.ProgressChanged
-        ProgressBar1.Value = e.ProgressPercentage
-        If e.ProgressPercentage = 100 Then
-            ProgressBar1.Visible = False
-
+        pbParsing.Value = e.ProgressPercentage
+        If e.ProgressPercentage = 0 Then 'now know numsamples
+            lblLines.Text = "Lines: " & numsamples
         End If
     End Sub
 
     Private Sub bwParseCSV_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles bwParseCSV.RunWorkerCompleted
-        'ProgressBar1.Visible = False
-        lblLines.Text = "Lines: " & numsamples
-        Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
-        FillSampleChart()
+        If e.Cancelled = False Then
+            pbParsing.Visible = False
+            Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+            FillSampleChart()
+        End If
     End Sub
 
-
-
-
     Private Sub FillSampleChart()
-        crtSamples.DisableAnimations = True
-        crtSamples.Hoverable = False
+        crtOutput.DisableAnimations = True
+        crtOutput.Hoverable = False
 
-        crtSamples.Series.Clear()
+        crtOutput.Series.Clear()
 
         Dim scol As New SeriesCollection
         Dim scatters As New LineSeries
@@ -113,10 +112,9 @@ Public Class frmMain
         scatters.Fill = Windows.Media.Brushes.Transparent
         scatters.Stroke = Windows.Media.Brushes.DarkBlue
 
-
         'scale to size of plot on screen, no point trying to plot more points than are visible
-        Dim skips As Integer = output.GetLength(1) / crtSamples.Width
-        For i As Integer = 0 To crtSamples.Width - 1
+        Dim skips As Integer = output.GetLength(1) / crtOutput.Width
+        For i As Integer = 0 To crtOutput.Width - 1
             Dim sp As Integer = i * skips
             If sp > output.GetLength(1) - 1 Then sp = output.GetLength(1) - 1
             scatters.Values.Add(New ObservablePoint(output(idxSecond, sp), output(idxVolt, sp)))
@@ -124,11 +122,9 @@ Public Class frmMain
 
         scatters.DataLabels = False
         scol.Add(scatters)
-        crtSamples.Series = scol
+        crtOutput.Series = scol
 
     End Sub
-
-
 
     Private Sub Convert(numOutputPoints As Integer)
 
@@ -293,6 +289,7 @@ Public Class frmMain
 
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         cmbOutputPoints.SelectedIndex = 0
+        bwParseCSV.WorkerReportsProgress = True
 
     End Sub
 
@@ -336,12 +333,12 @@ Public Class frmMain
                         samples(idxVolt, sampleI) = Trim(s(idxVolt))
                         sampleI += 1
                         Dim percent As Single = 100 * sampleI / numsamples
-                        If percent - prevpercent > 2 AndAlso percent <= 100 Then 'changed by 2%
+                        If percent - prevpercent >= 2 AndAlso percent <= 100 Then 'changed by 2%
                             bw.ReportProgress(percent)
-                            prevpercent = percent
+                            'Debug.Print("percent " & percent)
+                            prevpercent = CInt(percent)
                         End If
                         If sampleI > numsamples Then
-
                             Exit For
                         End If
                     End If
@@ -353,8 +350,7 @@ Public Class frmMain
                 End If
             Next ln
             sw.Stop()
-            Debug.Print("parsing " & sw.ElapsedMilliseconds)
-
+            'Debug.Print("parsing took " & sw.ElapsedMilliseconds)
         End Sub
     End Class
 End Class

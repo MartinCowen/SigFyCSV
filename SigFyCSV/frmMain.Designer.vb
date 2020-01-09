@@ -44,6 +44,7 @@ Partial Class frmMain
         Me.crtOutput = New LiveCharts.WinForms.CartesianChart()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.pbParsing = New System.Windows.Forms.ProgressBar()
+        Me.optPeakDetect = New System.Windows.Forms.RadioButton()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -138,11 +139,12 @@ Partial Class frmMain
         '
         'GroupBox2
         '
+        Me.GroupBox2.Controls.Add(Me.optPeakDetect)
         Me.GroupBox2.Controls.Add(Me.optAverageNearest)
         Me.GroupBox2.Controls.Add(Me.optDecimate)
         Me.GroupBox2.Location = New System.Drawing.Point(13, 134)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(138, 83)
+        Me.GroupBox2.Size = New System.Drawing.Size(138, 95)
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Sampling"
@@ -156,13 +158,11 @@ Partial Class frmMain
         Me.optAverageNearest.TabIndex = 1
         Me.optAverageNearest.Text = "Average nearest"
         Me.optAverageNearest.UseVisualStyleBackColor = True
-        Me.optAverageNearest.Visible = False
         '
         'optDecimate
         '
         Me.optDecimate.AutoSize = True
         Me.optDecimate.Checked = True
-        Me.optDecimate.Enabled = False
         Me.optDecimate.Location = New System.Drawing.Point(7, 20)
         Me.optDecimate.Name = "optDecimate"
         Me.optDecimate.Size = New System.Drawing.Size(109, 17)
@@ -269,6 +269,16 @@ Partial Class frmMain
         Me.pbParsing.Value = 100
         Me.pbParsing.Visible = False
         '
+        'optPeakDetect
+        '
+        Me.optPeakDetect.AutoSize = True
+        Me.optPeakDetect.Location = New System.Drawing.Point(7, 66)
+        Me.optPeakDetect.Name = "optPeakDetect"
+        Me.optPeakDetect.Size = New System.Drawing.Size(85, 17)
+        Me.optPeakDetect.TabIndex = 2
+        Me.optPeakDetect.Text = "Peak Detect"
+        Me.optPeakDetect.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -320,4 +330,5 @@ Partial Class frmMain
     Friend WithEvents crtOutput As LiveCharts.WinForms.CartesianChart
     Friend WithEvents Label2 As Label
     Friend WithEvents pbParsing As ProgressBar
+    Friend WithEvents optPeakDetect As RadioButton
 End Class

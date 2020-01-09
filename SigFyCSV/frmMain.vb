@@ -1,4 +1,7 @@
-﻿Imports LiveCharts
+﻿'Converts CSV files from Siglent SDS1104X-E Oscilloscope to list of samples format (.fy) file used by FeelElec FY6900 Arb Signal Generator
+'to be imported into their DDS Signal PC Software to be sent to sig gen.
+
+Imports LiveCharts
 Imports LiveCharts.Wpf
 Imports LiveCharts.WinForms
 Imports LiveCharts.Defaults
@@ -18,7 +21,7 @@ Public Class frmMain
     Enum samplingType
         decimate
         averagenearest
-
+        peakdetect
     End Enum
     Dim optionSampling As samplingType
     Enum verticalType
@@ -181,8 +184,33 @@ Public Class frmMain
                 output(idxSecond, i) = samples(idxSecond, i)
                 output(idxVolt, i) = vgain * (samples(idxVolt, sp) - voffset)
             Next i
-        End If
 
+        ElseIf optionSampling = samplingType.averagenearest Then
+
+            'precalculate this outside the loop to avoid doing the division inside the loop
+            Dim skips As ULong = (numsamples - startsample) / numOutputPoints
+
+            'loop round numops and get the values from the nearest points in array
+            For i As Integer = 0 To numOutputPoints - 1
+                Dim sp As Integer = (i * skips) + startsample
+                If sp > numsamples - 1 Then sp = numsamples - 1 'ensure don't overrun sample array
+                If sp < 0 Then sp = 0
+
+                'calculate the sum of this set of samples
+                Dim avg_mean As Single
+                Dim avg_sum As Single = 0
+                For j As Integer = 0 To skips - 1
+                    If (sp + j) < numsamples Then avg_sum += samples(idxVolt, sp + j)
+                Next j
+
+                'calculate the mean for this set of samples
+                avg_mean = avg_sum / skips
+
+                'copy over the samples into the output
+                output(idxSecond, i) = samples(idxSecond, i)
+                output(idxVolt, i) = vgain * (avg_mean - voffset)
+            Next i
+        End If
     End Sub
 
     Private Sub SaveAsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles SaveAsToolStripMenuItem.Click
@@ -247,13 +275,26 @@ Public Class frmMain
     End Sub
 
     Private Sub optDecimate_CheckedChanged(sender As Object, e As EventArgs) Handles optDecimate.CheckedChanged
+        SamplingModeOption()
+    End Sub
+    Private Sub optAverageNearest_CheckedChanged(sender As Object, e As EventArgs) Handles optAverageNearest.CheckedChanged
+        SamplingModeOption()
+    End Sub
+
+    Private Sub optPeakDetect_CheckedChanged(sender As Object, e As EventArgs) Handles optPeakDetect.CheckedChanged
+        SamplingModeOption()
+    End Sub
+    Private Sub SamplingModeOption()
         If optDecimate.Checked Then
             optionSampling = samplingType.decimate
         End If
         If optAverageNearest.Checked Then
             optionSampling = samplingType.averagenearest
-
         End If
+        If optPeakDetect.Checked Then
+            optionSampling = samplingType.peakdetect
+        End If
+
         If inFile <> String.Empty Then
             Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
             FillSampleChart()
@@ -353,4 +394,6 @@ Public Class frmMain
             'Debug.Print("parsing took " & sw.ElapsedMilliseconds)
         End Sub
     End Class
+
+
 End Class

@@ -401,6 +401,7 @@ Public Class frmMain
             _filename = f
         End Sub
         Public Sub OpenParseCSV()
+
             Dim sw As New Stopwatch
             Dim prevpercent As Single = 0
 
@@ -412,7 +413,7 @@ Public Class frmMain
             Dim sampleI As ULong
             For Each ln As String In fs
                 Dim ls() As String = ln.Split(",")
-                If ls(1).StartsWith("Analog:") Then
+                If Not endofheader AndAlso ls(1).StartsWith("Analog:") Then
                     'Record Length,Analog:1400000
                     Dim l1() As String = ls(1).Split(":")
                     If l1.Length > 0 Then
@@ -427,7 +428,7 @@ Public Class frmMain
                     'parse sample line, eg
                     '-0.00070000000, 0.29600
                     Dim s() As String = ln.Split(",")
-                    If s.Length = 2 Then
+                    If s.Length = 2 AndAlso IsNumeric(s(0)) AndAlso IsNumeric(s(1)) Then
                         samples(idxSecond, sampleI) = Trim(s(idxSecond))
                         samples(idxVolt, sampleI) = Trim(s(idxVolt))
                         sampleI += 1

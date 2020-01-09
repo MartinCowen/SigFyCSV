@@ -187,7 +187,6 @@ Public Class frmMain
 
         ElseIf optionSampling = samplingType.averagenearest Then
 
-            'precalculate this outside the loop to avoid doing the division inside the loop
             Dim skips As ULong = (numsamples - startsample) / numOutputPoints
 
             'loop round numops and get the values from the nearest points in array
@@ -207,6 +206,7 @@ Public Class frmMain
                     If (sp + j) < numsamples AndAlso (sp + j) > 0 Then
                         avg_sum += samples(idxVolt, sp + j)
                         avg_count += 1 'and only count those values which have been included in the sum
+                        'Debug.Print("sampling at " & sp + j)
                     End If
                 Next j
 
@@ -220,6 +220,56 @@ Public Class frmMain
                 'copy over the samples into the output
                 output(idxSecond, i) = samples(idxSecond, i)
                 output(idxVolt, i) = vgain * (avg_mean - voffset)
+            Next i
+
+        ElseIf optionSampling = samplingType.peakdetect Then
+
+            Dim skips As ULong = (numsamples - startsample) / numOutputPoints
+
+            'loop round numops and get the values from the nearest points in array
+            For i As Integer = 0 To numOutputPoints - 1
+                Dim sp As Integer = (i * skips) + startsample
+                If sp > numsamples - 1 Then sp = numsamples - 1 'ensure don't overrun sample array
+                If sp < 0 Then sp = 0
+
+                'calculate the sum of this set of samples
+                Dim avg_mean As Single
+                Dim avg_sum As Single = 0
+                Dim avg_count As Integer = 0
+                Dim pk_max As Single = Single.MinValue
+                Dim pk_min As Single = Single.MaxValue
+
+                'look at the samples either side of the current sp point, by skips/2
+                For j As Integer = -(skips / 2) To (skips / 2) - 1
+                    'check that we are within array bounds
+                    If (sp + j) < numsamples AndAlso (sp + j) > 0 Then
+                        'look for peak max and peak min
+                        If samples(idxVolt, sp + j) > pk_max Then pk_max = samples(idxVolt, sp + j)
+                        If samples(idxVolt, sp + j) < pk_min Then pk_min = samples(idxVolt, sp + j)
+                        'and need to still calc mean so that can see whether min or max is further from it
+                        avg_sum += samples(idxVolt, sp + j)
+                        avg_count += 1 'and only count those values which have been included in the sum
+                    End If
+                Next j
+
+                'calculate the mean for this set of samples
+                If avg_count > 0 Then   'prevent div by 0 in case no samples were in bounds
+                    avg_mean = avg_sum / avg_count
+                Else
+                    avg_mean = avg_sum 'probably 0 but better than div 0 error
+                End If
+
+                'Debug.Print("Sample at " & sp & " avg=" & avg_mean & " pk_max=" & pk_max & " pk_min=" & pk_min)
+
+                'copy over the samples into the output
+                If (pk_max - avg_mean) > (avg_mean - pk_min) Then   'max is further from avg_mean than min is, so use max for this output point
+                    output(idxVolt, i) = vgain * (pk_max - voffset)
+                Else    'min is further from avg_mean than max is, so use min for this output point
+                    output(idxVolt, i) = vgain * (pk_min - voffset)
+                End If
+
+                output(idxSecond, i) = samples(idxSecond, i)
+
             Next i
         End If
     End Sub

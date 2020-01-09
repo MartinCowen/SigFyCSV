@@ -26,12 +26,14 @@ Partial Class frmMain
         Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OpenToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SaveAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CopyToClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOptions = New System.Windows.Forms.Panel()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.optVertRescaleM1P1 = New System.Windows.Forms.RadioButton()
         Me.optVertRescale01 = New System.Windows.Forms.RadioButton()
         Me.optVertNoChange = New System.Windows.Forms.RadioButton()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.optPeakDetect = New System.Windows.Forms.RadioButton()
         Me.optAverageNearest = New System.Windows.Forms.RadioButton()
         Me.optDecimate = New System.Windows.Forms.RadioButton()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -44,8 +46,6 @@ Partial Class frmMain
         Me.crtOutput = New LiveCharts.WinForms.CartesianChart()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.pbParsing = New System.Windows.Forms.ProgressBar()
-        Me.optPeakDetect = New System.Windows.Forms.RadioButton()
-        Me.CopyToClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -72,14 +72,20 @@ Partial Class frmMain
         'OpenToolStripMenuItem
         '
         Me.OpenToolStripMenuItem.Name = "OpenToolStripMenuItem"
-        Me.OpenToolStripMenuItem.Size = New System.Drawing.Size(114, 22)
+        Me.OpenToolStripMenuItem.Size = New System.Drawing.Size(172, 22)
         Me.OpenToolStripMenuItem.Text = "Open"
         '
         'SaveAsToolStripMenuItem
         '
         Me.SaveAsToolStripMenuItem.Name = "SaveAsToolStripMenuItem"
-        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(114, 22)
+        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(172, 22)
         Me.SaveAsToolStripMenuItem.Text = "Save As"
+        '
+        'CopyToClipboardToolStripMenuItem
+        '
+        Me.CopyToClipboardToolStripMenuItem.Name = "CopyToClipboardToolStripMenuItem"
+        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(172, 22)
+        Me.CopyToClipboardToolStripMenuItem.Text = "Copy To Clipboard"
         '
         'pnlOptions
         '
@@ -149,6 +155,16 @@ Partial Class frmMain
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Sampling"
+        '
+        'optPeakDetect
+        '
+        Me.optPeakDetect.AutoSize = True
+        Me.optPeakDetect.Location = New System.Drawing.Point(7, 66)
+        Me.optPeakDetect.Name = "optPeakDetect"
+        Me.optPeakDetect.Size = New System.Drawing.Size(85, 17)
+        Me.optPeakDetect.TabIndex = 2
+        Me.optPeakDetect.Text = "Peak Detect"
+        Me.optPeakDetect.UseVisualStyleBackColor = True
         '
         'optAverageNearest
         '
@@ -269,22 +285,6 @@ Partial Class frmMain
         Me.pbParsing.TabIndex = 7
         Me.pbParsing.Value = 100
         Me.pbParsing.Visible = False
-        '
-        'optPeakDetect
-        '
-        Me.optPeakDetect.AutoSize = True
-        Me.optPeakDetect.Location = New System.Drawing.Point(7, 66)
-        Me.optPeakDetect.Name = "optPeakDetect"
-        Me.optPeakDetect.Size = New System.Drawing.Size(85, 17)
-        Me.optPeakDetect.TabIndex = 2
-        Me.optPeakDetect.Text = "Peak Detect"
-        Me.optPeakDetect.UseVisualStyleBackColor = True
-        '
-        'CopyToClipboardToolStripMenuItem
-        '
-        Me.CopyToClipboardToolStripMenuItem.Name = "CopyToClipboardToolStripMenuItem"
-        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.CopyToClipboardToolStripMenuItem.Text = "Copy To Clipboard"
         '
         'frmMain
         '

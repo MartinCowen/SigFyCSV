@@ -7,10 +7,7 @@ Imports LiveCharts.WinForms
 Imports LiveCharts.Defaults
 Imports System.ComponentModel
 
-
 Public Class frmMain
-
-
     Dim inFile As String
     Shared numsamples As Integer
     Private Shared samples(1, 0) As Single
@@ -104,6 +101,8 @@ Public Class frmMain
     Private Sub FillSampleChart()
         crtOutput.DisableAnimations = True
         crtOutput.Hoverable = False
+
+        crtOutput.AxisX(0).MaxValue = Double.NaN 'autoscale x axis to data, which is in seconds
 
         crtOutput.Series.Clear()
 
@@ -397,8 +396,6 @@ Public Class frmMain
 
     Class cParser
         Private _filename As String
-        'Private samples(1, 0) As Single
-        'Private numsamples As Integer
         Public bw As BackgroundWorker
         Public Sub New(f As String)
             _filename = f
@@ -468,5 +465,12 @@ Public Class frmMain
         Catch ex As Exception
             MsgBox("Could not copy to clipboard. " & ex.ToString)
         End Try
+    End Sub
+
+    Private Sub cmbOutputPoints_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbOutputPoints.SelectedIndexChanged
+        If cmbOutputPoints.SelectedIndex > 0 Then
+            Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
+            FillSampleChart()
+        End If
     End Sub
 End Class

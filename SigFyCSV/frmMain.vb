@@ -456,5 +456,17 @@ Public Class frmMain
         End Sub
     End Class
 
+    Private Sub CopyToClipboardToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyToClipboardToolStripMenuItem.Click
+        Dim fs As String = String.Empty
+        For i As Integer = 0 To output.GetLength(1) - 1
+            fs &= output(idxVolt, i) & Environment.NewLine
+        Next i
 
+        Try
+            My.Computer.Clipboard.Clear()
+            My.Computer.Clipboard.SetText(fs)
+        Catch ex As Exception
+            MsgBox("Could not copy to clipboard. " & ex.ToString)
+        End Try
+    End Sub
 End Class

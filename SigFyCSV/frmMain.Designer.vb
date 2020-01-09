@@ -45,6 +45,7 @@ Partial Class frmMain
         Me.Label2 = New System.Windows.Forms.Label()
         Me.pbParsing = New System.Windows.Forms.ProgressBar()
         Me.optPeakDetect = New System.Windows.Forms.RadioButton()
+        Me.CopyToClipboardToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -63,7 +64,7 @@ Partial Class frmMain
         '
         'FileToolStripMenuItem
         '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenToolStripMenuItem, Me.SaveAsToolStripMenuItem})
+        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenToolStripMenuItem, Me.SaveAsToolStripMenuItem, Me.CopyToClipboardToolStripMenuItem})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
         Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.FileToolStripMenuItem.Text = "File"
@@ -279,6 +280,12 @@ Partial Class frmMain
         Me.optPeakDetect.Text = "Peak Detect"
         Me.optPeakDetect.UseVisualStyleBackColor = True
         '
+        'CopyToClipboardToolStripMenuItem
+        '
+        Me.CopyToClipboardToolStripMenuItem.Name = "CopyToClipboardToolStripMenuItem"
+        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.CopyToClipboardToolStripMenuItem.Text = "Copy To Clipboard"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -331,4 +338,5 @@ Partial Class frmMain
     Friend WithEvents Label2 As Label
     Friend WithEvents pbParsing As ProgressBar
     Friend WithEvents optPeakDetect As RadioButton
+    Friend WithEvents CopyToClipboardToolStripMenuItem As ToolStripMenuItem
 End Class

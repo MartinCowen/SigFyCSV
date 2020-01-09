@@ -199,12 +199,23 @@ Public Class frmMain
                 'calculate the sum of this set of samples
                 Dim avg_mean As Single
                 Dim avg_sum As Single = 0
-                For j As Integer = 0 To skips - 1
-                    If (sp + j) < numsamples Then avg_sum += samples(idxVolt, sp + j)
+                Dim avg_count As Integer = 0
+
+                'look at the samples either side of the current sp point, by skips/2
+                For j As Integer = -(skips / 2) To (skips / 2) - 1
+                    'check that we are within array bounds
+                    If (sp + j) < numsamples AndAlso (sp + j) > 0 Then
+                        avg_sum += samples(idxVolt, sp + j)
+                        avg_count += 1 'and only count those values which have been included in the sum
+                    End If
                 Next j
 
                 'calculate the mean for this set of samples
-                avg_mean = avg_sum / skips
+                If avg_count > 0 Then   'prevent div by 0 in case no samples were in bounds
+                    avg_mean = avg_sum / avg_count
+                Else
+                    avg_mean = avg_sum 'probably 0 but better than div 0 error
+                End If
 
                 'copy over the samples into the output
                 output(idxSecond, i) = samples(idxSecond, i)

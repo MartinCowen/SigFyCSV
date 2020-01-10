@@ -416,45 +416,62 @@ Public Class frmMain
             sw.Start()
             Dim fs() As String = IO.File.ReadAllLines(_filename)
             sw.Stop()
-            Debug.Print("read all lines " & sw.ElapsedMilliseconds)
+            'Debug.Print("read all lines " & sw.ElapsedMilliseconds)
             Dim endofheader As Boolean = False
             Dim sampleI As ULong
+
+            'There are two different CSV formats produced by Siglent.
+            'One has a 6 line header starting with Record Length,Analog:number
+            'that is produced when you convert a bin to csv using their bin2csv program.
+            'The other has 2 line header which does not state the record length
+            'The header lines are
+            'Source,CHx
+            'Second,Volt
+            'that is producted when you use on the on scope menu to save as CSV.
+            'also in some cases the number of lines does not match the record length promised, so it is best to use the number of lines in the file minus the header
+            'the simplest approach is to ignore the headers and just look for the numbers to start
+
+            'first pass to find the number of lines starting with a number
+            Dim countNumericLines As Integer = 0
+
+            For Each ln As String In fs
+                If ln.StartsWith("+") OrElse ln.StartsWith("-") OrElse ln.StartsWith(" 0") OrElse ln.StartsWith("0") Then
+                    countNumericLines += 1
+                    endofheader = True
+                ElseIf endofheader Then 'drop out if second header section found
+                    Exit For
+                End If
+            Next ln
+
+            numsamples = countNumericLines
+            ReDim samples(1, numsamples)
+            sampleI = 0
+            bw.ReportProgress(0)
+
+            'second pass to extract the samples
             For Each ln As String In fs
                 Dim ls() As String = ln.Split(",")
-                If Not endofheader AndAlso ls(1).StartsWith("Analog:") Then
-                    'Record Length,Analog:1400000
-                    Dim l1() As String = ls(1).Split(":")
-                    If l1.Length > 0 Then
-                        numsamples = ls(1).Split(":")(1)
-                        ReDim samples(1, numsamples)
-                        sampleI = 0
-                        bw.ReportProgress(0)
+
+                'parse sample line, eg
+                '-0.00070000000, 0.29600
+                Dim s() As String = ln.Split(",")
+                'the header lines have length 2 but not both items are numeric
+                If s.Length = 2 AndAlso IsNumeric(s(0)) AndAlso IsNumeric(s(1)) Then
+                    samples(idxSecond, sampleI) = Trim(s(idxSecond))
+                    samples(idxVolt, sampleI) = Trim(s(idxVolt))
+                    sampleI += 1
+
+                    'only report when changed by significant amount so that reporting isn't taking up too much CPU time
+                    Dim percent As Single = 100 * sampleI / numsamples
+                    If percent - prevpercent >= 2 AndAlso percent <= 100 Then 'changed by 2%
+                        bw.ReportProgress(percent)
+                        'Debug.Print("percent " & percent)
+                        prevpercent = CInt(percent)
                     End If
-                End If
-                'test endofheader before setting true so that only lines after endofheader are analysed
-                If endofheader Then
-                    'parse sample line, eg
-                    '-0.00070000000, 0.29600
-                    Dim s() As String = ln.Split(",")
-                    If s.Length = 2 AndAlso IsNumeric(s(0)) AndAlso IsNumeric(s(1)) Then
-                        samples(idxSecond, sampleI) = Trim(s(idxSecond))
-                        samples(idxVolt, sampleI) = Trim(s(idxVolt))
-                        sampleI += 1
-                        Dim percent As Single = 100 * sampleI / numsamples
-                        If percent - prevpercent >= 2 AndAlso percent <= 100 Then 'changed by 2%
-                            bw.ReportProgress(percent)
-                            'Debug.Print("percent " & percent)
-                            prevpercent = CInt(percent)
-                        End If
-                        If sampleI > numsamples Then
-                            Exit For
-                        End If
+
+                    If sampleI > numsamples Then
+                        Exit For
                     End If
-                End If
-                If ls(0) = "Second" Then 'the line before the data starts is "Second,Volt"
-                    endofheader = True
-                    sw.Reset()
-                    sw.Start()
                 End If
             Next ln
             sw.Stop()

@@ -95,6 +95,8 @@ Public Class frmMain
             pbParsing.Visible = False
             Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
             FillSampleChart()
+            SaveAsToolStripMenuItem.Enabled = True
+            CopyToClipboardToolStripMenuItem.Enabled = True
         End If
     End Sub
 
@@ -307,10 +309,7 @@ Public Class frmMain
 
     End Sub
     Private Sub SaveOutput(filename As String)
-        Dim fs As String = String.Empty
-        For i As Integer = 0 To output.GetLength(1) - 1
-            fs &= output(idxVolt, i) & Environment.NewLine
-        Next i
+        Dim fs As String = MakeOutputIntoString()
 
         Try
             IO.File.WriteAllText(filename, fs)
@@ -318,6 +317,15 @@ Public Class frmMain
             MsgBox("Error during save " & ex.ToString)
         End Try
     End Sub
+
+    Private Function MakeOutputIntoString() As String
+        Dim fs As String = String.Empty
+        For i As Integer = 0 To output.GetLength(1) - 1
+            fs &= output(idxVolt, i) & Environment.NewLine
+        Next i
+
+        Return fs
+    End Function
 
     Private Sub optComplete_CheckedChanged(sender As Object, e As EventArgs) Handles optComplete.CheckedChanged
         If optComplete.Checked Then
@@ -455,10 +463,7 @@ Public Class frmMain
     End Class
 
     Private Sub CopyToClipboardToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopyToClipboardToolStripMenuItem.Click
-        Dim fs As String = String.Empty
-        For i As Integer = 0 To output.GetLength(1) - 1
-            fs &= output(idxVolt, i) & Environment.NewLine
-        Next i
+        Dim fs As String = MakeOutputIntoString()
 
         Try
             My.Computer.Clipboard.Clear()
@@ -473,5 +478,25 @@ Public Class frmMain
             Convert(CInt(cmbOutputPoints.Items(cmbOutputPoints.SelectedIndex).ToString))
             FillSampleChart()
         End If
+    End Sub
+
+    Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
+        MessageBox.Show(Application.ProductName & " Version " & Application.ProductVersion, Application.ProductName)
+    End Sub
+
+    Private Sub GuideToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GuideToolStripMenuItem.Click
+        Const helpfile As String = "UserGuide.pdf"
+
+        If My.Computer.FileSystem.FileExists(helpfile) Then
+            Try
+                Process.Start(helpfile)
+
+            Catch ex As Exception
+                MessageBox.Show("Could not open User Guide at " & helpfile, Application.ProductName)
+            End Try
+        Else
+            MessageBox.Show("Could not find User Guide at " & helpfile, Application.ProductName)
+        End If
+
     End Sub
 End Class

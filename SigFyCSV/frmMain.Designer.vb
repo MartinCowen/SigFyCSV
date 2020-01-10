@@ -46,6 +46,9 @@ Partial Class frmMain
         Me.crtOutput = New LiveCharts.WinForms.CartesianChart()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.pbParsing = New System.Windows.Forms.ProgressBar()
+        Me.HelpToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.GuideToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.AboutToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1.SuspendLayout()
         Me.pnlOptions.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -55,7 +58,7 @@ Partial Class frmMain
         '
         'MenuStrip1
         '
-        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem})
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.HelpToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Size = New System.Drawing.Size(773, 24)
@@ -77,14 +80,16 @@ Partial Class frmMain
         '
         'SaveAsToolStripMenuItem
         '
+        Me.SaveAsToolStripMenuItem.Enabled = False
         Me.SaveAsToolStripMenuItem.Name = "SaveAsToolStripMenuItem"
-        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(172, 22)
+        Me.SaveAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SaveAsToolStripMenuItem.Text = "Save As"
         '
         'CopyToClipboardToolStripMenuItem
         '
+        Me.CopyToClipboardToolStripMenuItem.Enabled = False
         Me.CopyToClipboardToolStripMenuItem.Name = "CopyToClipboardToolStripMenuItem"
-        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(172, 22)
+        Me.CopyToClipboardToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.CopyToClipboardToolStripMenuItem.Text = "Copy To Clipboard"
         '
         'pnlOptions
@@ -205,7 +210,7 @@ Partial Class frmMain
         '
         Me.cmbOutputPoints.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbOutputPoints.FormattingEnabled = True
-        Me.cmbOutputPoints.Items.AddRange(New Object() {"8192", "4096", "2048"})
+        Me.cmbOutputPoints.Items.AddRange(New Object() {"8192", "4096", "2048", "1024", "512"})
         Me.cmbOutputPoints.Location = New System.Drawing.Point(51, 71)
         Me.cmbOutputPoints.Name = "cmbOutputPoints"
         Me.cmbOutputPoints.Size = New System.Drawing.Size(59, 21)
@@ -254,7 +259,7 @@ Partial Class frmMain
         'lblLines
         '
         Me.lblLines.AutoSize = True
-        Me.lblLines.Location = New System.Drawing.Point(12, 52)
+        Me.lblLines.Location = New System.Drawing.Point(14, 48)
         Me.lblLines.Name = "lblLines"
         Me.lblLines.Size = New System.Drawing.Size(35, 13)
         Me.lblLines.TabIndex = 4
@@ -271,7 +276,7 @@ Partial Class frmMain
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(361, 52)
+        Me.Label2.Location = New System.Drawing.Point(384, 52)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(42, 13)
         Me.Label2.TabIndex = 6
@@ -285,6 +290,25 @@ Partial Class frmMain
         Me.pbParsing.TabIndex = 7
         Me.pbParsing.Value = 100
         Me.pbParsing.Visible = False
+        '
+        'HelpToolStripMenuItem
+        '
+        Me.HelpToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.GuideToolStripMenuItem, Me.AboutToolStripMenuItem})
+        Me.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
+        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(44, 20)
+        Me.HelpToolStripMenuItem.Text = "Help"
+        '
+        'GuideToolStripMenuItem
+        '
+        Me.GuideToolStripMenuItem.Name = "GuideToolStripMenuItem"
+        Me.GuideToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.GuideToolStripMenuItem.Text = "Guide"
+        '
+        'AboutToolStripMenuItem
+        '
+        Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
+        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.AboutToolStripMenuItem.Text = "About"
         '
         'frmMain
         '
@@ -339,4 +363,7 @@ Partial Class frmMain
     Friend WithEvents pbParsing As ProgressBar
     Friend WithEvents optPeakDetect As RadioButton
     Friend WithEvents CopyToClipboardToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents HelpToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents GuideToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents AboutToolStripMenuItem As ToolStripMenuItem
 End Class

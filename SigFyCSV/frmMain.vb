@@ -502,7 +502,7 @@ Public Class frmMain
     End Sub
 
     Private Sub GuideToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles GuideToolStripMenuItem.Click
-        Const helpfile As String = "UserGuide.pdf"
+        Const helpfile As String = "SigFyCSVUserGuide.pdf"
 
         If My.Computer.FileSystem.FileExists(helpfile) Then
             Try

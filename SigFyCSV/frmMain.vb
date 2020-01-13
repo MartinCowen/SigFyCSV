@@ -13,7 +13,7 @@ Public Class frmMain
     Private Shared samples(1, 0) As Single
     Dim output(1, 0) As Single
     Dim startsample As Integer
-    Dim endsample As Integer
+
     Dim startAtTrig As Boolean
     Enum samplingType
         decimate
@@ -80,7 +80,7 @@ Public Class frmMain
         Dim mParser As New cParser(args.filename)
         mParser.bw = bwParseCSV
         mParser.OpenParseCSV()
-        mParser = Nothing
+
     End Sub
 
     Private Sub bwParseCSV_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles bwParseCSV.ProgressChanged
@@ -214,13 +214,14 @@ Public Class frmMain
                 'calculate the mean for this set of samples
                 If avg_count > 0 Then   'prevent div by 0 in case no samples were in bounds
                     avg_mean = avg_sum / avg_count
-                Else
-                    avg_mean = avg_sum 'probably 0 but better than div 0 error
+
+                    'copy over the samples into the output
+                    output(idxVolt, i) = vgain * (avg_mean - voffset)
+
                 End If
 
-                'copy over the samples into the output
                 output(idxSecond, i) = samples(idxSecond, i)
-                output(idxVolt, i) = vgain * (avg_mean - voffset)
+
             Next i
 
         ElseIf optionSampling = samplingType.peakdetect Then
@@ -247,6 +248,7 @@ Public Class frmMain
                         'look for peak max and peak min
                         If samples(idxVolt, sp + j) > pk_max Then pk_max = samples(idxVolt, sp + j)
                         If samples(idxVolt, sp + j) < pk_min Then pk_min = samples(idxVolt, sp + j)
+
                         'and need to still calc mean so that can see whether min or max is further from it
                         avg_sum += samples(idxVolt, sp + j)
                         avg_count += 1 'and only count those values which have been included in the sum
@@ -256,17 +258,16 @@ Public Class frmMain
                 'calculate the mean for this set of samples
                 If avg_count > 0 Then   'prevent div by 0 in case no samples were in bounds
                     avg_mean = avg_sum / avg_count
-                Else
-                    avg_mean = avg_sum 'probably 0 but better than div 0 error
-                End If
 
-                'Debug.Print("Sample at " & sp & " avg=" & avg_mean & " pk_max=" & pk_max & " pk_min=" & pk_min)
+                    'Debug.Print("Sample at " & sp & " avg=" & avg_mean & " pk_max=" & pk_max & " pk_min=" & pk_min)
 
-                'copy over the samples into the output
-                If (pk_max - avg_mean) > (avg_mean - pk_min) Then   'max is further from avg_mean than min is, so use max for this output point
-                    output(idxVolt, i) = vgain * (pk_max - voffset)
-                Else    'min is further from avg_mean than max is, so use min for this output point
-                    output(idxVolt, i) = vgain * (pk_min - voffset)
+                    'copy over the samples into the output
+                    If (pk_max - avg_mean) > (avg_mean - pk_min) Then   'max is further from avg_mean than min is, so use max for this output point
+                        output(idxVolt, i) = vgain * (pk_max - voffset)
+                    Else    'min is further from avg_mean than max is, so use min for this output point
+                        output(idxVolt, i) = vgain * (pk_min - voffset)
+                    End If
+
                 End If
 
                 output(idxSecond, i) = samples(idxSecond, i)
@@ -403,7 +404,7 @@ Public Class frmMain
     End Sub
 
     Class cParser
-        Private _filename As String
+        Private ReadOnly _filename As String
         Public bw As BackgroundWorker
         Public Sub New(f As String)
             _filename = f

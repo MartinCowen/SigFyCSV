@@ -27,4 +27,11 @@ but the FY6900 only needs to see the voltages, not the time points, so it requir
 -0.198
 
 However, it is more complicated than that because the FY6900 has a maximum number of sample points of 8192 but the Siglent SDS 1104X-E can export 14 millions points.
-So this program is needed to downsample and has some other useful options, see the documentation.
+So this program is needed to downsample and has some other useful options, see the SigFyCSVUserGuide.docx/pdf
+
+To run this program, you need the files in the Release folder at
+https://github.com/MartinCowen/SigFyCSV/tree/master/SigFyCSV/bin/x86/Release
+There is no installer but it will on run on up to date Windows 10 systems.
+
+To build this program from source:
+This is a VB.NET desktop application (WinForms) built using Visual Studio Community 2019, with the .NET Framework 4.8.03752 and LiveCharts from https://lvcharts.net/ (MIT licenced).

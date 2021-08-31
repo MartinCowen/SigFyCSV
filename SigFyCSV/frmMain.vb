@@ -133,6 +133,7 @@ Public Class frmMain
     Private Sub Convert(numOutputPoints As Integer)
 
         ReDim output(1, numOutputPoints - 1)
+
         If startAtTrig = False Then
             startsample = 0
         Else
@@ -182,7 +183,7 @@ Public Class frmMain
                 If sp < 0 Then sp = 0
 
                 'copy over the samples into the output
-                output(idxSecond, i) = samples(idxSecond, i)
+                output(idxSecond, i) = samples(idxSecond, sp)
                 output(idxVolt, i) = vgain * (samples(idxVolt, sp) - voffset)
             Next i
 
@@ -220,7 +221,7 @@ Public Class frmMain
 
                 End If
 
-                output(idxSecond, i) = samples(idxSecond, i)
+                output(idxSecond, i) = samples(idxSecond, sp)
 
             Next i
 
@@ -270,7 +271,7 @@ Public Class frmMain
 
                 End If
 
-                output(idxSecond, i) = samples(idxSecond, i)
+                output(idxSecond, i) = samples(idxSecond, sp)
 
             Next i
         End If
